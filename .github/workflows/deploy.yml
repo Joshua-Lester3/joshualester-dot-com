@@ -33,11 +33,19 @@ jobs:
           role-to-assume: arn:aws:iam::528757819881:role/GitHubAction-Deployer
           role-session-name: GitHubAction-Deployer
           aws-region: ${{ env.AWS_REGION }}
+
       - name: Install dependencies
         run: npm i
+        working-directory: web
+
       - name: Build
         run: npm run build
+        working-directory: web
+
       - name: Generate
         run: npm run generate
+        working-directory: web
+
       - name: Transfer files to S3 Bucket
         run: aws s3 sync dist/ ${{env.AWS_BUCKET_NAME}} --delete
+        working-directory: web

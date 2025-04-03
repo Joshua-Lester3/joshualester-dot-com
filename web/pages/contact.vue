@@ -75,9 +75,9 @@ async function callLambdaFunction() {
     const region = 'us-west-2';
     const service = 'lambda';
     const signer = new SignatureV4({
-      credentials,
-      region,
-      service,
+      credentials: credentials,
+      region: region,
+      service: service,
       sha256: Sha256
     });
     const url = "https://jinii423dk7tlzqzargo4vwih40vaiyt.lambda-url.us-west-2.on.aws/";

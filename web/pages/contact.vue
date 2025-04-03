@@ -90,20 +90,15 @@ async function callLambdaFunction() {
       path: urlObj.pathname + urlObj.search,
       headers: {
         'host': urlObj.host,
-        'Content-Type': 'application/json'
+        'content-type': 'application/json'
       },
       body: ''
     };
     const signedRequest = await signer.sign(opts);
 
 
-    const response = await axios.get(url, {
+    const response = await axios.get(urlObj.pathname + urlObj.search, {
       headers: signedRequest.headers,
-      params: {
-        name: name.value,
-        email: email.value,
-        message: message.value
-      }
     });
     submitted.value = true;
   } catch (error) {

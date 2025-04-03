@@ -90,6 +90,7 @@ async function callLambdaFunction() {
       method: 'GET',
       path: urlObj.pathname + urlObj.search,
       headers: {
+        'host': urlObj.host,
         'Content-Type': 'application/json'
       },
       body: ''

@@ -82,6 +82,9 @@ async function callLambdaFunction() {
     });
     const url = "https://jinii423dk7tlzqzargo4vwih40vaiyt.lambda-url.us-west-2.on.aws/";
     const urlObj = new window.URL(url);
+    urlObj.searchParams.append('name', name.value);
+    urlObj.searchParams.append('email', email.value);
+    urlObj.searchParams.append('message', message.value);
     const opts = {
       protocol: urlObj.protocol,
       hostname: urlObj.host,
@@ -98,8 +101,14 @@ async function callLambdaFunction() {
 
     delete signedRequest.headers.host;
     console.log(urlObj.pathname + urlObj.search)
-    const response = await axios.get(urlObj.pathname + urlObj.search, {
+    urlObj.searchParams
+    const response = await axios.get(url, {
       headers: signedRequest.headers,
+      params: {
+        name: name.value,
+        email: email.value,
+        message: message.value
+      }
     });
     submitted.value = true;
   } catch (error) {

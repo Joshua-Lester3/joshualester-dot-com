@@ -34,51 +34,71 @@
 <script setup lang="ts">
 import axios from 'axios';
 import aws4 from 'aws4';
-import { URL } from 'url';
-import AWS from 'aws-sdk';
-import { Credentials } from '@aws-amplify/core';
+import { SignatureV4 } from '@smithy/signature-v4';
+import { Sha256 } from "@aws-crypto/sha256-browser";
+import { fromCognitoIdentityPool } from '@aws-sdk/credential-providers';
+import { CognitoIdentityClient } from "@aws-sdk/client-cognito-identity";
 
 const name: Ref<string> = ref("");
 const email: Ref<string> = ref("");
 const message: Ref<string> = ref("");
 const submitted: Ref<boolean> = ref(false);
 
-AWS.config.region = 'us-west-2';
-AWS.config.credentials = new AWS.CognitoIdentityCredentials({
-  IdentityPoolId: 'us-west-2:7364a1c1-1935-4ddc-94ec-ca2237048f96'
+// AWS.config.region = 'us-west-2';
+// AWS.config.credentials = new AWS.CognitoIdentityCredentials({
+//   IdentityPoolId: 'us-west-2:7364a1c1-1935-4ddc-94ec-ca2237048f96'
+// });
+// const creds = AWS.config.credentials as AWS.Credentials;
+// let accessKeyId;
+// let secretAccessKey;
+// let sessionToken;
+// creds.get(() => {
+//   accessKeyId = AWS.config.credentials?.accessKeyId;
+//   secretAccessKey = AWS.config.credentials?.secretAccessKey;
+//   sessionToken = AWS.config.credentials?.sessionToken;
+// });
+
+const client = new CognitoIdentityClient({ region: 'us-west-2' });
+const credentialsProvider = fromCognitoIdentityPool({
+  identityPoolId: "us-west-2:7364a1c1-1935-4ddc-94ec-ca2237048f96",
+  clientConfig: { region: 'us-west-2' },
 });
+const credProvider = await credentialsProvider();
 
 async function callLambdaFunction() {
   try {
-    const creds = AWS.config.credentials as AWS.Credentials;
-
-    creds.get(async (err: any) => {
-      if (err) {
-        console.error('error retrieving creds', err);
-        return;
-      }
+    const credentials = {
+      accessKeyId: credProvider.accessKeyId,
+      secretAccessKey: credProvider.secretAccessKey,
+      sessionToken: credProvider.sessionToken,
+      expiration: new Date(Date.now() + 3600 * 1000),
+    };
+    const region = 'us-west-2';
+    const service = 'lambda';
+    const signer = new SignatureV4({
+      credentials,
+      region,
+      service,
+      sha256: Sha256
     });
     const url = "https://jinii423dk7tlzqzargo4vwih40vaiyt.lambda-url.us-west-2.on.aws/";
-    const urlObj = new URL(url);
+    const urlObj = new window.URL(url);
     const opts = {
-      host: urlObj.host,
-      path: urlObj.pathname + urlObj.search,
+      protocol: urlObj.protocol,
+      hostname: urlObj.host,
+      port: Number(urlObj.port),
       method: 'GET',
-      service: 'lambda',
-      region: 'us-west-2',
+      path: urlObj.pathname + urlObj.search,
       headers: {
         'Content-Type': 'application/json'
-      }
+      },
+      body: ''
     };
-    aws4.sign(opts, {
-      accessKeyId: creds.accessKeyId,
-      secretAccessKey: creds.secretAccessKey,
-      sessionToken: creds.sessionToken
-    });
+    const signedRequest = await signer.sign(opts);
 
 
     const response = await axios.get(url, {
-      headers: opts.headers,
+      headers: signedRequest.headers,
       params: {
         name: name.value,
         email: email.value,

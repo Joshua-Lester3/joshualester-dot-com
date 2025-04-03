@@ -71,7 +71,6 @@ async function callLambdaFunction() {
       accessKeyId: credProvider.accessKeyId,
       secretAccessKey: credProvider.secretAccessKey,
       sessionToken: credProvider.sessionToken,
-      expiration: new Date(Date.now() + 3600 * 1000),
     };
     const region = 'us-west-2';
     const service = 'lambda';

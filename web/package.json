@@ -15,12 +15,17 @@
     "@fortawesome/vue-fontawesome": "^3.0.8",
     "@mdi/font": "^7.4.47",
     "@nuxt/content": "^3.4.0",
+    "aws-amplify": "^5.3.27",
+    "aws-sdk": "^2.1692.0",
+    "aws4": "^1.13.2",
     "axios": "^1.8.4",
     "nuxt": "^3.16.1",
+    "url": "^0.11.4",
     "vue": "^3.5.13",
     "vue-router": "^4.5.0"
   },
   "devDependencies": {
+    "@types/aws4": "^1.11.6",
     "vite-plugin-vuetify": "^2.1.0",
     "vuetify": "^3.7.19"
   }

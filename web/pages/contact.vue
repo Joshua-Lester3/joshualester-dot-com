@@ -33,15 +33,52 @@
 
 <script setup lang="ts">
 import axios from 'axios';
+import aws4 from 'aws4';
+import { URL } from 'url';
+import AWS from 'aws-sdk';
+import { Credentials } from '@aws-amplify/core';
+
 const name: Ref<string> = ref("");
 const email: Ref<string> = ref("");
 const message: Ref<string> = ref("");
 const submitted: Ref<boolean> = ref(false);
 
+AWS.config.region = 'us-west-2';
+AWS.config.credentials = new AWS.CognitoIdentityCredentials({
+  IdentityPoolId: 'us-west-2:7364a1c1-1935-4ddc-94ec-ca2237048f96'
+});
+
 async function callLambdaFunction() {
   try {
+    const creds = AWS.config.credentials as AWS.Credentials;
+
+    creds.get(async (err: any) => {
+      if (err) {
+        console.error('error retrieving creds', err);
+        return;
+      }
+    });
     const url = "https://jinii423dk7tlzqzargo4vwih40vaiyt.lambda-url.us-west-2.on.aws/";
+    const urlObj = new URL(url);
+    const opts = {
+      host: urlObj.host,
+      path: urlObj.pathname + urlObj.search,
+      method: 'GET',
+      service: 'lambda',
+      region: 'us-west-2',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    };
+    aws4.sign(opts, {
+      accessKeyId: creds.accessKeyId,
+      secretAccessKey: creds.secretAccessKey,
+      sessionToken: creds.sessionToken
+    });
+
+
     const response = await axios.get(url, {
+      headers: opts.headers,
       params: {
         name: name.value,
         email: email.value,

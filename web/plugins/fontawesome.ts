@@ -2,6 +2,7 @@
 import { library, config } from '@fortawesome/fontawesome-svg-core';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { faGithub, faLinkedin } from '@fortawesome/free-brands-svg-icons';
+import { faAddressCard } from '@fortawesome/free-solid-svg-icons';
 
 // This is important, we are going to let Nuxt worry about the CSS
 config.autoAddCss = false;
@@ -10,6 +11,7 @@ config.autoAddCss = false;
 // // can add other styles or just individual icons.
 // library.add(fas)
 library.add(faGithub);
+library.add(faAddressCard);
 library.add(faLinkedin);
 
 export default defineNuxtPlugin((nuxtApp) => {

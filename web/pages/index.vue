@@ -19,24 +19,24 @@
           </span>
         </v-btn>
       </v-col>
+      <v-col cols="auto" class="d-flex justify-center">
+        <v-btn color="primary" @click="router.push('contact')">
+          <font-awesome-icon icon="fa-solid fa-address-card" />
+          &nbsp;
+          <span>
+            Contact
+          </span>
+        </v-btn>
+      </v-col>
 
     </v-row>
     <v-card class="mx-auto" elevation="3" color="tertiary" max-width="1000">
-      <v-sheet color="secondary" class="d-flex justify-center">
+      <v-sheet color="secondary" class="d-flex justify-center ">
         <v-card-title class="text-h5">
           Joshua Lester
         </v-card-title>
       </v-sheet>
-      <v-sheet color="secondary" class="d-flex justify-center pb-2">
-        <v-row justify="center" class="text-subtitle-1">
-          <v-col cols="auto" class="d-flex justify-center">
-            Spokane, WA
-          </v-col>
-          <v-col cols="auto" class="d-flex justify-center">
-            josh@joshualester.com
-          </v-col>
-        </v-row>
-      </v-sheet>
+
       <v-sheet color="primary" class="text-h6 py-1 pl-3">
         <div>
           Education
@@ -291,5 +291,5 @@
 </template>
 
 <script setup lang="ts">
-
+const router = useRouter();
 </script>

@@ -89,14 +89,15 @@ async function callLambdaFunction() {
       method: 'GET',
       path: urlObj.pathname + urlObj.search,
       headers: {
+        'content-type': 'application/json',
         'host': urlObj.host,
-        'content-type': 'application/json'
       },
       body: ''
     };
     const signedRequest = await signer.sign(opts);
 
-
+    delete signedRequest.headers.host;
+    console.log(urlObj.pathname + urlObj.search)
     const response = await axios.get(urlObj.pathname + urlObj.search, {
       headers: signedRequest.headers,
     });

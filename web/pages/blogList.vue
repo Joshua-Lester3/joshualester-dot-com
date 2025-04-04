@@ -24,6 +24,15 @@
 </template>
 
 <script setup lang="ts">
+const originalAtob = window.atob;
+window.atob = function (str) {
+  try {
+    return originalAtob(str);
+  } catch (e) {
+    console.error('atob failed with string:', str);
+    throw e;
+  }
+}
 const posts = await queryCollection('blog')
   .select('title', 'date', 'description', 'path', 'id')
   .order('date', 'DESC')

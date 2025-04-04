@@ -32,7 +32,6 @@
 </template>
 
 <script setup lang="ts">
-import axios from 'axios';
 import { SignatureV4 } from '@smithy/signature-v4';
 import { Sha256 } from "@aws-crypto/sha256-js";
 import { fromCognitoIdentityPool } from '@aws-sdk/credential-providers';
@@ -43,53 +42,19 @@ const email: Ref<string> = ref("");
 const message: Ref<string> = ref("");
 const submitted: Ref<boolean> = ref(false);
 
-const credentialsProvider = fromCognitoIdentityPool({
-  identityPoolId: "us-west-2:7364a1c1-1935-4ddc-94ec-ca2237048f96",
-  clientConfig: { region: 'us-west-2' },
-});
-const credProvider = await credentialsProvider();
 
 async function callLambdaFunction() {
   try {
-    const credentials = {
-      accessKeyId: credProvider.accessKeyId,
-      secretAccessKey: credProvider.secretAccessKey,
-      sessionToken: credProvider.sessionToken,
-    };
-    const region = 'us-west-2';
-    const service = 'lambda';
-    const signer = new SignatureV4({
-      credentials,
-      service: service,
-      region: region,
-      sha256: Sha256
+    const credentialsProvider = fromCognitoIdentityPool({
+      identityPoolId: "us-west-2:7364a1c1-1935-4ddc-94ec-ca2237048f96",
+      clientConfig: { region: 'us-west-2' },
     });
+    const credProvider = await credentialsProvider();
     const url = "https://jinii423dk7tlzqzargo4vwih40vaiyt.lambda-url.us-west-2.on.aws/";
     const urlObj = new window.URL(url);
     urlObj.searchParams.append('name', name.value);
     urlObj.searchParams.append('email', email.value);
     urlObj.searchParams.append('message', message.value);
-    // const opts = {
-    //   protocol: urlObj.protocol,
-    //   hostname: urlObj.host,
-    //   port: Number(urlObj.port),
-    //   method: 'GET',
-    //   path: urlObj.pathname + urlObj.search,
-    //   headers: {
-    //     'content-type': 'application/json',
-    //     'host': urlObj.host,
-    //   },
-    //   body: ''
-    // };
-    // const opts = {
-    //   protocol: urlObj.protocol,
-    //   hostname: urlObj.host,
-    //   method: 'GET',
-    //   path: urlObj.pathname + urlObj.search,
-    //   headers: {
-    //     'host': urlObj.host,
-    //   },
-    // };
     const options: SignedFetcherOptions = {
       service: 'lambda',
       region: 'us-west-2',
@@ -101,19 +66,6 @@ async function callLambdaFunction() {
     };
     const signedFetch = createSignedFetcher(options);
     const response = await signedFetch(urlObj);
-    // const signedRequest = await signer.sign({
-    //   method: opts.method,
-    //   headers: opts.headers,
-    //   hostname: urlObj.hostname,
-    //   path: opts.path,
-    //   protocol: urlObj.protocol
-    // });
-
-    // Object.assign(opts.headers, signedRequest.headers);
-    // delete signedRequest.headers.host;
-    // const response = await axios.get(urlObj.toString(), {
-    //   headers: signedRequest.headers,
-    // });
     submitted.value = true;
   } catch (error) {
     console.error('Error calling lambda contact form function:', error)

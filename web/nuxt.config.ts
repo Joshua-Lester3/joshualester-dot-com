@@ -26,6 +26,9 @@ export default defineNuxtConfig({
     },
   ],
   vite: {
+    build: {
+      sourcemap: true,
+    },
     vue: {
       template: {
         transformAssetUrls,

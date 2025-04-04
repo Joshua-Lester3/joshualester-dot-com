@@ -58,9 +58,9 @@ async function callLambdaFunction() {
     const region = 'us-west-2';
     const service = 'lambda';
     const signer = new SignatureV4({
-      credentials: credentials,
-      region: region,
+      credentials,
       service: service,
+      region: region,
       sha256: Sha256
     });
     const url = "https://jinii423dk7tlzqzargo4vwih40vaiyt.lambda-url.us-west-2.on.aws/";
@@ -99,7 +99,6 @@ async function callLambdaFunction() {
 
     // Object.assign(opts.headers, signedRequest.headers);
     delete signedRequest.headers.host;
-    debugger;
     const response = await axios.get(urlObj.toString(), {
       headers: signedRequest.headers,
     });

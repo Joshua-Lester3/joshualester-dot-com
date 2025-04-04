@@ -36,6 +36,7 @@ import axios from 'axios';
 import { SignatureV4 } from '@smithy/signature-v4';
 import { Sha256 } from "@aws-crypto/sha256-js";
 import { fromCognitoIdentityPool } from '@aws-sdk/credential-providers';
+import { createSignedFetcher, type SignedFetcherOptions } from 'aws-sigv4-fetch';
 
 const name: Ref<string> = ref("");
 const email: Ref<string> = ref("");
@@ -80,28 +81,39 @@ async function callLambdaFunction() {
     //   },
     //   body: ''
     // };
-    const opts = {
-      protocol: urlObj.protocol,
-      hostname: urlObj.host,
-      method: 'GET',
-      path: urlObj.pathname + urlObj.search,
-      headers: {
-        'host': urlObj.host,
-      },
+    // const opts = {
+    //   protocol: urlObj.protocol,
+    //   hostname: urlObj.host,
+    //   method: 'GET',
+    //   path: urlObj.pathname + urlObj.search,
+    //   headers: {
+    //     'host': urlObj.host,
+    //   },
+    // };
+    const options: SignedFetcherOptions = {
+      service: 'lambda',
+      region: 'us-west-2',
+      credentials: {
+        accessKeyId: credProvider.accessKeyId,
+        secretAccessKey: credProvider.secretAccessKey,
+        sessionToken: credProvider.sessionToken,
+      }
     };
-    const signedRequest = await signer.sign({
-      method: opts.method,
-      headers: opts.headers,
-      hostname: urlObj.hostname,
-      path: opts.path,
-      protocol: urlObj.protocol
-    });
+    const signedFetch = createSignedFetcher(options);
+    const response = await signedFetch(urlObj);
+    // const signedRequest = await signer.sign({
+    //   method: opts.method,
+    //   headers: opts.headers,
+    //   hostname: urlObj.hostname,
+    //   path: opts.path,
+    //   protocol: urlObj.protocol
+    // });
 
     // Object.assign(opts.headers, signedRequest.headers);
-    delete signedRequest.headers.host;
-    const response = await axios.get(urlObj.toString(), {
-      headers: signedRequest.headers,
-    });
+    // delete signedRequest.headers.host;
+    // const response = await axios.get(urlObj.toString(), {
+    //   headers: signedRequest.headers,
+    // });
     submitted.value = true;
   } catch (error) {
     console.error('Error calling lambda contact form function:', error)

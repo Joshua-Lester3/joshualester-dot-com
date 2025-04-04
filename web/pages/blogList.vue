@@ -24,7 +24,10 @@
 </template>
 
 <script setup lang="ts">
-const posts = await queryCollection('blog').order('date', 'DESC').all();
+const posts = await queryCollection('blog')
+  .select('title', 'date', 'description', 'path', 'id')
+  .order('date', 'DESC')
+  .all();
 const router = useRouter();
 
 function getName(path: string): string {

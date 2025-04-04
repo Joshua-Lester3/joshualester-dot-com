@@ -32,8 +32,6 @@
 </template>
 
 <script setup lang="ts">
-import { SignatureV4 } from '@smithy/signature-v4';
-import { Sha256 } from "@aws-crypto/sha256-js";
 import { fromCognitoIdentityPool } from '@aws-sdk/credential-providers';
 import { createSignedFetcher, type SignedFetcherOptions } from 'aws-sigv4-fetch';
 

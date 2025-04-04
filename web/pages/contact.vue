@@ -33,32 +33,15 @@
 
 <script setup lang="ts">
 import axios from 'axios';
-import aws4 from 'aws4';
 import { SignatureV4 } from '@smithy/signature-v4';
-import { Sha256 } from "@aws-crypto/sha256-browser";
+import { Sha256 } from "@aws-crypto/sha256-js";
 import { fromCognitoIdentityPool } from '@aws-sdk/credential-providers';
-import { CognitoIdentityClient } from "@aws-sdk/client-cognito-identity";
 
 const name: Ref<string> = ref("");
 const email: Ref<string> = ref("");
 const message: Ref<string> = ref("");
 const submitted: Ref<boolean> = ref(false);
 
-// AWS.config.region = 'us-west-2';
-// AWS.config.credentials = new AWS.CognitoIdentityCredentials({
-//   IdentityPoolId: 'us-west-2:7364a1c1-1935-4ddc-94ec-ca2237048f96'
-// });
-// const creds = AWS.config.credentials as AWS.Credentials;
-// let accessKeyId;
-// let secretAccessKey;
-// let sessionToken;
-// creds.get(() => {
-//   accessKeyId = AWS.config.credentials?.accessKeyId;
-//   secretAccessKey = AWS.config.credentials?.secretAccessKey;
-//   sessionToken = AWS.config.credentials?.sessionToken;
-// });
-
-const client = new CognitoIdentityClient({ region: 'us-west-2' });
 const credentialsProvider = fromCognitoIdentityPool({
   identityPoolId: "us-west-2:7364a1c1-1935-4ddc-94ec-ca2237048f96",
   clientConfig: { region: 'us-west-2' },
@@ -85,30 +68,40 @@ async function callLambdaFunction() {
     urlObj.searchParams.append('name', name.value);
     urlObj.searchParams.append('email', email.value);
     urlObj.searchParams.append('message', message.value);
+    // const opts = {
+    //   protocol: urlObj.protocol,
+    //   hostname: urlObj.host,
+    //   port: Number(urlObj.port),
+    //   method: 'GET',
+    //   path: urlObj.pathname + urlObj.search,
+    //   headers: {
+    //     'content-type': 'application/json',
+    //     'host': urlObj.host,
+    //   },
+    //   body: ''
+    // };
     const opts = {
       protocol: urlObj.protocol,
       hostname: urlObj.host,
-      port: Number(urlObj.port),
       method: 'GET',
       path: urlObj.pathname + urlObj.search,
       headers: {
-        'content-type': 'application/json',
         'host': urlObj.host,
       },
-      body: ''
     };
-    const signedRequest = await signer.sign(opts);
+    const signedRequest = await signer.sign({
+      method: opts.method,
+      headers: opts.headers,
+      hostname: urlObj.hostname,
+      path: opts.path,
+      protocol: urlObj.protocol
+    });
 
+    // Object.assign(opts.headers, signedRequest.headers);
     delete signedRequest.headers.host;
-    console.log(urlObj.pathname + urlObj.search)
-    urlObj.searchParams
-    const response = await axios.get(url, {
+    debugger;
+    const response = await axios.get(urlObj.toString(), {
       headers: signedRequest.headers,
-      params: {
-        name: name.value,
-        email: email.value,
-        message: message.value
-      }
     });
     submitted.value = true;
   } catch (error) {

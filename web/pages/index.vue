@@ -19,7 +19,7 @@
           </span>
         </v-btn>
       </v-col>
-      <!-- <v-col cols="auto" class="d-flex justify-center">
+      <v-col cols="auto" class="d-flex justify-center">
         <v-btn color="primary" @click="router.push('contact')">
           <font-awesome-icon icon="fa-solid fa-address-card" />
           &nbsp;
@@ -27,7 +27,7 @@
             Contact
           </span>
         </v-btn>
-      </v-col> -->
+      </v-col>
 
     </v-row>
     <v-card class="mx-auto" elevation="3" color="tertiary" max-width="1000">

@@ -1,1 +1,19 @@
-<mat-slide-toggle>Toggle me!</mat-slide-toggle>
+<mat-toolbar color="primary">
+  <span class="name">Joshua Lester</span>
+  <span class="spacer"></span>
+  <button mat-button (click)="goToLink('https://github.com/joshua-lester3')">
+    <mat-icon>code</mat-icon>
+    GitHub
+  </button>
+  <button
+    mat-button
+    (click)="goToLink('https://www.linkedin.com/in/joshua-lester-72232525a/')"
+  >
+    <mat-icon>work</mat-icon>
+    LinkedIn
+  </button>
+  <button mat-button (click)="scrollTo('contact')">
+    <mat-icon>email</mat-icon>
+    Contact
+  </button>
+</mat-toolbar>
